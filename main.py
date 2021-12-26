@@ -1,6 +1,8 @@
 import pygame
 import sys
+import random
 import pymunk
+import pymunk.pygame_util
 import math
 
 mainClock = pygame.time.Clock()
@@ -29,21 +31,26 @@ def main_menu():
 
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-        draw_text('#HackyWinterland', font, (0, 0, 0), screen, 350, 580)
         mx, my = pygame.mouse.get_pos()
 
         button_1 = pygame.Rect(100, 150, 205, 40)
         button_2 = pygame.Rect(500, 150, 200, 40)
+        button_3 = pygame.Rect(350, 150, 100, 40)
         if button_1.collidepoint((mx, my)):
             if click:
                 game1()
         if button_2.collidepoint((mx, my)):
             if click:
                 game2()
+        if button_3.collidepoint((mx, my)):
+            if click:
+                game3()
         pygame.draw.rect(screen, (7, 192, 198), button_1)
         pygame.draw.rect(screen, (7, 192, 198), button_2)
+        pygame.draw.rect(screen, (7, 192, 198), button_3)
         draw_text('InclinedPlane', font, (0, 0, 0), screen, 145, 155)
         draw_text('Collision', font, (0, 0, 0), screen, 560, 155)
+        draw_text('orbiting', font, (0, 0, 0), screen, 360, 155)
         click = False
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -263,6 +270,74 @@ def game1():
         pygame.display.update()
         clock.tick(60)
 
+def game3():
+    random.seed(5)
+    gravityStrength = 5.0e6
+
+    def planetGravity(body, gravity, damping, dt):
+        # Gravitational acceleration is proportional to the inverse square of
+        # distance, and directed toward the origin. The central planet is assumed
+        # to be massive enough that it affects the satellites but not vice versa.
+        sq_dist = body.position.get_dist_sqrd((300, 300))
+        g = (
+                (body.position - pymunk.Vec2d(300, 300))
+                * -gravityStrength
+                / (sq_dist * math.sqrt(sq_dist))
+        )
+        pymunk.Body.update_velocity(body, g, damping, dt)
+
+    def add_box(space):
+        body = pymunk.Body()
+        body.position = pymunk.Vec2d(random.randint(50, 550), random.randint(50, 550))
+        body.velocity_func = planetGravity
+
+        # Set the box's velocity to put it into a circular orbit from its
+        # starting position.
+        r = body.position.get_distance((300, 300))
+        v = math.sqrt(gravityStrength / r) / r
+        body.velocity = (body.position - pymunk.Vec2d(300, 300)).perpendicular() * v
+        # Set the box's angular velocity to match its orbital period and
+        # align its initial angle with its position.
+        body.angular_velocity = v
+        body.angle = math.atan2(body.position.y, body.position.x)
+
+        box = pymunk.Poly.create_box(body, size=(10, 10))
+        box.mass = 1
+        box.friction = 0.7
+        box.elasticity = 0
+        box.color = pygame.Color("white")
+        space.add(body, box)
+
+    pygame.init()
+    screen = pygame.display.set_mode((800, 600))
+    clock = pygame.time.Clock()
+    background = pygame.image.load('space2.jpg')
+    space = pymunk.Space()
+    draw_options = pymunk.pygame_util.DrawOptions(screen)
+    icon = pygame.image.load('physics-8.png')
+    pygame.display.set_icon(icon)
+    for x in range(30):
+        add_box(space)
+    star_surface = pygame.image.load('star.png')
+    star_rect = star_surface.get_rect(center=(300, 300))
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    running = False
+        screen.blit(background, (0, 0))
+        space.debug_draw(draw_options)
+        screen.blit(star_surface, star_rect)
+        space.step(1 / 60)
+
+        pygame.display.flip()
+        clock.tick(60)
+        pygame.display.set_caption("fps: " + str(clock.get_fps()))
+
 def game2():
     # title and icon
     pygame.display.set_caption("collision of two bodies")
@@ -305,7 +380,6 @@ def game2():
     gs = 500
     apple_surface = pygame.image.load('asteroid-3.png')
     apples = []
-    ap = 0
     ball_surface = pygame.image.load('planet-2.png')
     balls = []
     balls.append(static_ball(space, (400, 400)))
