@@ -11,7 +11,7 @@ pygame.display.set_caption('Physics Simulator')
 icon = pygame.image.load('pendulum.png')
 pygame.display.set_icon(icon)
 screen = pygame.display.set_mode((800, 600), 0, 32)
-font = pygame.font.SysFont(None, 20)
+font = pygame.font.SysFont('Comic Sans MS', 20)
 background = pygame.image.load('Ui-1.png')
 
 def draw_text(text, font, color, surface, x, y):
@@ -29,21 +29,21 @@ def main_menu():
 
         screen.fill((0, 0, 0))
         screen.blit(background, (0, 0))
-        draw_text('#hackyWinterland', font, (255, 255, 255), screen, 20, 20)
-
+        draw_text('#HackyWinterland', font, (0, 0, 0), screen, 350, 580)
         mx, my = pygame.mouse.get_pos()
 
-        button_1 = pygame.Rect(50, 100, 200, 50)
-        button_2 = pygame.Rect(50, 200, 200, 50)
+        button_1 = pygame.Rect(100, 150, 205, 40)
+        button_2 = pygame.Rect(500, 150, 200, 40)
         if button_1.collidepoint((mx, my)):
             if click:
                 game1()
         if button_2.collidepoint((mx, my)):
             if click:
                 game2()
-        pygame.draw.rect(screen, (255, 0, 0), button_1)
-        pygame.draw.rect(screen, (255, 0, 0), button_2)
-
+        pygame.draw.rect(screen, (7, 192, 198), button_1)
+        pygame.draw.rect(screen, (7, 192, 198), button_2)
+        draw_text('InclinedPlane', font, (0, 0, 0), screen, 145, 155)
+        draw_text('Collision', font, (0, 0, 0), screen, 560, 155)
         click = False
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -112,7 +112,7 @@ def game1():
     background = pygame.image.load('ϴ.png')
 
     # title and icon
-    pygame.display.set_caption("Physics Simulator")
+    pygame.display.set_caption("Motion on Inclined Plane")
     icon = pygame.image.load('physics-7.png')
     pygame.display.set_icon(icon)
 
@@ -263,7 +263,6 @@ def game1():
         pygame.display.update()
         clock.tick(60)
 
-
 def game2():
     # title and icon
     pygame.display.set_caption("collision of two bodies")
@@ -328,7 +327,6 @@ def game2():
             if event.type == KEYDOWN:
                 if event.key == K_ESCAPE:
                     running = False
-
             if event.type == pygame.MOUSEBUTTONDOWN:
                 apples.append(create_apple(space, event.pos))
             if event.type == pygame.KEYDOWN:
