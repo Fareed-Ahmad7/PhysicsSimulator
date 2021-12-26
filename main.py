@@ -405,9 +405,9 @@ def game2():
                 apples.append(create_apple(space, event.pos))
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_RIGHT:
-                    gd += 100
+                    gd += 1000
                 if event.key == pygame.K_LEFT:
-                    gd -= 100
+                    gd -= 1000
                 if event.key == pygame.K_UP:
                     gs += 1000
                 if event.key == pygame.K_DOWN:
