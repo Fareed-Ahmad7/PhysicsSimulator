@@ -1,11 +1,11 @@
 # PhysicsSimulator
-A fun physics simulator made with python, pygame, pymunk
+A fun physics simulator made with python, pygame, pymunk.
 
 Read this instructions before you try out the project:
 1. install pygame and pymunk on your pc.
 2. if importing pygame/pymunk gives error try running on venv.
 
-// when the project is runned
+//  when the project is runned
 1. To explore sections on main menu -> click on the buttons.
 2. To return to the main menu -> click esc on keyboard
 3. To store the values in motion of inclined plane -> click enter on keyboard after typing the input.
